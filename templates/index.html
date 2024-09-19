@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-out;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        input, button {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
+            outline: none;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        button:active {
+            background-color: #1e7e34;
+            transform: scale(0.98);
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #555;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Diabetes Prediction</h2>
+    <form id="prediction-form">
+        <!-- Input fields adjusted to match your model's expected features -->
+        <input type="number" id="feature1" placeholder="Pregnancies" required>
+        <input type="number" id="feature2" placeholder="Glucose" required>
+        <input type="number" id="feature3" placeholder="Blood Pressure" required>
+        <input type="number" id="feature4" placeholder="Skin Thickness" required>
+        <input type="number" id="feature5" placeholder="Insulin" required>
+        <input type="number" id="feature6" placeholder="BMI" step="0.1" required>
+        <input type="number" id="feature7" placeholder="Diabetes Pedigree Function" step="0.01" required>
+        <input type="number" id="feature8" placeholder="Age" required>
+        <button type="submit">Predict</button>
+    </form>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    document.getElementById('prediction-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        // Collect values from the input fields
+        const features = [
+            parseFloat(document.getElementById('feature1').value),
+            parseFloat(document.getElementById('feature2').value),
+            parseFloat(document.getElementById('feature3').value),
+            parseFloat(document.getElementById('feature4').value),
+            parseFloat(document.getElementById('feature5').value),
+            parseFloat(document.getElementById('feature6').value),
+            parseFloat(document.getElementById('feature7').value),
+            parseFloat(document.getElementById('feature8').value)
+        ];
+
+        // Send the collected data to the Flask API
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ features: features })
+            });
+
+            const result = await response.json();
+
+            // Display the result or error message
+            document.getElementById('result').textContent = result.prediction !== undefined 
+                ? `Prediction: ${result.prediction}` 
+                : `Error: ${result.error}`;
+
+        } catch (error) {
+            document.getElementById('result').textContent = 'Error: Could not connect to the server';
+        }
+    });
+</script>
+
+</body>
+</html>
